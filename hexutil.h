@@ -22,7 +22,7 @@ extern void int_test(uint32_t * test_value);
 /*
  * Convert a 32 bit unsigned integer to Hex.
  *
- * reult must point to an array with room for at least 8 characters.
+ * result must point to an array with room for at least 8 characters.
  */
 extern void uint32_to_hex(uint32_t value, char * result);
 
@@ -31,7 +31,7 @@ extern void uint32_to_hex(uint32_t value, char * result);
  *
  * Omits leading 0s
  * 
- * reult must point to an array with room for at least 8 characters.
+ * result must point to an array with room for at least 8 characters.
  */
 extern void uint32_to_hex_string(uint32_t value, char * result);
 
