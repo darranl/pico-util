@@ -2,16 +2,16 @@
 @
 @ This file is part of pico-util.
 @
-@ pico-util is free software: you can redistribute it and/or modify it under the terms 
-@ of the GNU General Public License as published by the Free Software Foundation, either 
+@ pico-util is free software: you can redistribute it and/or modify it under the terms
+@ of the GNU General Public License as published by the Free Software Foundation, either
 @ version 3 of the License, or (at your option) any later version.
 @
-@ pico-util is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
-@ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+@ pico-util is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+@ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 @ See the GNU General Public License for more details.
 @
 @ You should have received a copy of the GNU General Public License along with pico-util.
-@ If  not, see <https://www.gnu.org/licenses/>. 
+@ If  not, see <https://www.gnu.org/licenses/>.
 
 @  Function:
 @   void int_test(uint32_t * test_value);
@@ -19,7 +19,7 @@
 @  R0 - Address of input String
 @
 .global int_test   @ This line says the label needs to be global.
-int_test:          @ This then defines the label.    
+int_test:          @ This then defines the label.
     PUSH {R4}
     LDRB R4, [R0]
     LDRB R4, [R0, #1]
@@ -33,9 +33,35 @@ int_test:          @ This then defines the label.
     LDRB R4, [R0]
     LDRB R4, [R0, #1]
     LDRB R4, [R0, #2]
-    LDRB R4, [R0, #3]    
+    LDRB R4, [R0, #3]
     POP {R4}
     BX LR
+
+@ Function:
+@ extern void uint8_to_hex(uint8_t value, char * result);
+@ Initial Registers
+@ R0 - value
+@ R1 - result
+.global uint8_to_hex     @ This line says the label needs to be global.
+ uint8_to_hex:           @ This then defines the label.
+    MOV R2, #1           @ Start position
+uint8_start_nibble:
+    MOV R3, #0xF         @ Set R3 to 0xF so we can mast last 4 bits
+    AND R3, R0, R3       @ Update R3 to represent last 4 bits
+    CMP R3, #0xA         @ If above 0x9 we need to move to A-F
+    BPL uint8_gt_ten     @ More digits below A so minimise additional branch.
+    ADD R3, #0x30
+uint8_next:STRB R3, [R1, R2] @ Store char at offset
+    SUB R2, R2, #1      @ Subtract one from the counter.
+    BMI uint8_return     @ If below jump to return.
+    LSR R0, R0, #4      @ Shift right by 4.
+    B uint8_start_nibble @ Loop again.
+uint8_return: BX LR
+
+
+uint8_gt_ten:
+    ADD R3, #0x37         @ Just increment by further 0x11
+    B uint8_next
 
 @ Function:
 @  void uint32_to_hex(uint32_t value, char * result);
@@ -64,7 +90,7 @@ int_test:          @ This then defines the label.
 @  F = 70 = 0x46
 @
 .global uint32_to_hex     @ This line says the label needs to be global.
- uint32_to_hex:           @ This then defines the label.    
+ uint32_to_hex:           @ This then defines the label.
     MOV R2, #7            @ Start position counter at 7, least significant nibble.
 start_nibble:
     MOV R3, #0xF          @ Set R3 to 0xF so we can mast last 4 bits
@@ -72,11 +98,11 @@ start_nibble:
     CMP R3, #0xA          @ If above 0x9 we need to move to A-F
     BPL gt_ten            @ More digits below A so minimise additional branch.
     ADD R3, #0x30
-next:  STRB R3, [R1, R2] @ Store char at offset 
+next:  STRB R3, [R1, R2] @ Store char at offset
     SUB R2, R2, #1       @ Subtract one from the counter.
     BMI return           @ If below jump to return.
     LSR R0, R0, #4       @ Shift right by 4.
-    B start_nibble       @ Loop again. 
+    B start_nibble       @ Loop again.
 return: BX LR
 
 gt_ten:
@@ -94,7 +120,7 @@ gt_ten:
 @  R3 = Current digit
 @  R4 = Count - Start at 7 so we can detect when we go below 0.
 .global uint32_to_hex_string     @ This line says the label needs to be global.
- uint32_to_hex_string:           @ This then defines the label. 
+ uint32_to_hex_string:           @ This then defines the label.
     PUSH {R4}
     MOV R2, #0x0
     MOV R4, #0x8
@@ -132,7 +158,7 @@ gt_ten2:
 store_zero:
     MOV R3, #0x30
     STRB R3, [R1, R2]
-    ADD R2, #0x1    
+    ADD R2, #0x1
     B end_to_hex_string
 
 
@@ -187,7 +213,7 @@ hex_to_char:
     LDRB R1, [R0]    @ Load second char
     BL single_hex_to_char
     ORR R1, R1, R2
-    MOV R0, R1    
+    MOV R0, R1
 
     POP { PC }
 

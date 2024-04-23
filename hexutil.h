@@ -19,6 +19,14 @@
 
 extern void int_test(uint32_t * test_value);
 
+
+/*
+ * Convert a 8 bit unsigned integer to Hex.
+ *
+ * result must point to an array with room for at least 2 characters.
+ */
+extern void uint8_to_hex(uint8_t value, char * result);
+
 /*
  * Convert a 32 bit unsigned integer to Hex.
  *
